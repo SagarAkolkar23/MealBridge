@@ -19,6 +19,10 @@ playServicesAuth = "21.3.0"
 uiText = "1.7.8"
 uiToolingPreview = "1.7.8"
 navigationRuntimeKtx = "2.8.7"
+navigationCompose = "2.8.7"
+firebaseDatabase = "21.0.0"
+firebaseStorageKtx = "21.0.1"
+playServicesLocation = "21.3.0"
 
 [libraries]
 #noinspection SimilarGradleDependency
@@ -53,6 +57,10 @@ firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
+firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

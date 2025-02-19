@@ -41,6 +41,7 @@ fun Home(){
     Column(modifier = Modifier
         .fillMaxSize()) {
         Text("Hello User")
+        card()
 
     }
 

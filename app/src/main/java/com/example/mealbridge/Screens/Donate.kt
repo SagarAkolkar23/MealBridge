@@ -1,10 +1,14 @@
 package com.example.mealbridge.Screens
 
+import android.Manifest
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.pm.PackageManager
 import android.icu.text.SimpleDateFormat
+import android.location.Location
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -63,8 +67,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.mealbridge.R
+import com.example.mealbridge.UploadFoodDetails
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import java.io.File
 import java.util.Calendar
 import java.util.Date
@@ -73,7 +84,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Donate(){
+fun Donate(navController: NavController){
 
     val foodDescription = remember { mutableStateOf("") }
     val foodQuantity = remember { mutableStateOf("") }
@@ -81,11 +92,14 @@ fun Donate(){
     val number = remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
-    var time by remember { mutableStateOf("") }
+    var time by remember { mutableStateOf("Select Pick Up Time*") }
     var photoUri by remember { mutableStateOf<Uri?>(null) }
     val type = listOf("Veg", "Non-Veg", "Both")
     var expanded by remember { mutableStateOf(false) }
     var selectedCountry by remember { mutableStateOf("Food Type*") }
+    val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).build()
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+
 
 
     val cameraLauncher = rememberLauncherForActivityResult(
@@ -99,7 +113,14 @@ fun Donate(){
         }
     )
 
-
+    val locationPermissionRequest = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { granted ->
+            if (!granted) {
+                showToast(context, "Location permission is required.")
+            }
+        }
+    )
 
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -108,7 +129,7 @@ fun Donate(){
                 color = Color.White,
                 fontSize = 20.sp) },
             navigationIcon = {
-                IconButton(onClick = { /* Handle navigation icon press */ }) {
+                IconButton(onClick = { navController.navigate(BottomNavItem.Home.route) }) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "Menu")
                 }
             },
@@ -180,7 +201,7 @@ fun Donate(){
                         backgroundColor = Color.Transparent
                     )
                 ) {
-                    Text("Select Pick Up Time*")
+                    Text(time)
                 }
             }
             item {
@@ -252,7 +273,53 @@ fun Donate(){
             }
             item {
                 Button(
-                    onClick = { },
+                    onClick = {
+                        if (validateFields(
+                                context,
+                                number.value,
+                                addressDetails.value,
+                                foodDescription.value,
+                                foodQuantity.value,
+                                selectedCountry,
+                                time,
+                                photoUri
+                            )) {
+
+                            // Check location permissions
+                            if (ContextCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.ACCESS_FINE_LOCATION
+                                ) == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                // Fetch last known location
+                                fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                                    if (location != null) {
+                                        val latitude: Double = location.latitude
+                                        val longitude: Double = location.longitude
+
+                                        UploadFoodDetails(
+                                            number.value,
+                                            addressDetails.value,
+                                            foodDescription.value,
+                                            foodQuantity.value,
+                                            selectedCountry,
+                                            time,
+                                            photoUri,
+                                            latitude,
+                                            longitude,
+                                            context
+                                        )
+                                        navController.navigate(BottomNavItem.Home.route)
+                                    } else {
+                                        showToast(context, "Could not fetch location. Try again.")
+                                    }
+                                }
+                            } else {
+                                // Request location permission
+                                locationPermissionRequest.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                            }
+                        }
+                    },
                     modifier = Modifier.clip(RoundedCornerShape(8.dp)),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = colorResource(R.color.BlueButton)
@@ -299,7 +366,7 @@ fun showTimePicker(context: Context, onTimeSelected: (Int, Int) -> Unit) {
 
     val timePickerDialog = TimePickerDialog(context, { _, selectedHour, selectedMinute ->
         onTimeSelected(selectedHour, selectedMinute)
-    }, hour, minute, true)
+    }, hour, minute, false)
 
     timePickerDialog.show()
 }
@@ -322,6 +389,49 @@ fun createImageFile(context: Context, onUriCreated: (Uri) -> Unit): File {
         )
         onUriCreated(photoUri)
     }
+}
+
+fun validateFields(
+    context: Context,
+    number: String,
+    address: String,
+    foodDesc: String,
+    foodQty: String,
+    foodType: String,
+    time: String,
+    photoUri: Uri?
+): Boolean {
+    return when {
+        number.isEmpty() -> {
+            showToast(context, "Please enter your contact details.")
+            false
+        }
+        address.isEmpty() -> {
+            showToast(context, "Please enter the address details.")
+            false
+        }
+        foodDesc.isEmpty() -> {
+            showToast(context, "Please enter the food description.")
+            false
+        }
+        foodQty.isEmpty() -> {
+            showToast(context, "Please enter the food quantity.")
+            false
+        }
+        foodType == "Food Type*" -> {
+            showToast(context, "Please select a food type.")
+            false
+        }
+        time.isEmpty() -> {
+            showToast(context, "Please select a pickup time.")
+            false
+        }
+        else -> true
+    }
+}
+
+fun showToast(context: Context, message: String) {
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 }
 
 

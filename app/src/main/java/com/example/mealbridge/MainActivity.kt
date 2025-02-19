@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import com.example.mealbridge.Screens.BottomNavBar
 import com.example.mealbridge.ui.theme.MealBridgeTheme
 import android.Manifest
+import androidx.navigation.compose.rememberNavController
 
 
 class MainActivity : ComponentActivity() {
@@ -31,6 +32,8 @@ class MainActivity : ComponentActivity() {
             Log.e("Camera", "Camera permission denied")
         }
     }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -40,8 +43,9 @@ class MainActivity : ComponentActivity() {
         }
         enableEdgeToEdge()
         setContent {
+            val navController = rememberNavController()
             MealBridgeTheme {
-                BottomNavBar()
+                navigations()
             }
         }
     }
