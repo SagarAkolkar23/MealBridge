@@ -136,7 +136,7 @@ fun Donate(navController: NavController){
             modifier = Modifier
                 .fillMaxWidth(),
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = colorResource(R.color.NavBar),
+                containerColor = colorResource(R.color.calmingGreen),
                 titleContentColor = Color.White,
                 actionIconContentColor = Color.White,
 
@@ -160,12 +160,12 @@ fun Donate(navController: NavController){
                         onNext = { focusManager.moveFocus(FocusDirection.Down) }
                     ),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = colorResource(R.color.NavBar),
+                        focusedBorderColor = colorResource(R.color.calmingGreenLight),
                         unfocusedLabelColor = Color.Gray,
                         cursorColor = Color.Black,
                         textColor = Color.LightGray,
-                        focusedLabelColor = colorResource(R.color.NavBar),
-                        unfocusedBorderColor = colorResource(R.color.BlueButton)
+                        focusedLabelColor = colorResource(R.color.calmingGreenLight),
+                        unfocusedBorderColor = colorResource(R.color.calmingGreenLight)
                     )
                 )
             }
@@ -193,7 +193,7 @@ fun Donate(navController: NavController){
                         }
                     },
                     modifier = Modifier
-                        .border(1.dp, colorResource(R.color.BlueButton), shape = RoundedCornerShape(5.dp))
+                        .border(1.dp, colorResource(R.color.calmingGreenLight), shape = RoundedCornerShape(5.dp))
                         .width(280.dp)
                         .clip(RoundedCornerShape(30.dp)),
                     colors = ButtonDefaults.outlinedButtonColors(
@@ -208,7 +208,7 @@ fun Donate(navController: NavController){
                 OutlinedButton(
                     onClick = { expanded = true },
                     modifier = Modifier
-                        .border(1.dp, colorResource(R.color.BlueButton), shape = RoundedCornerShape(5.dp))
+                        .border(1.dp, colorResource(R.color.calmingGreenLight), shape = RoundedCornerShape(5.dp))
                         .width(280.dp)
                         .clip(RoundedCornerShape(30.dp)),
                     colors = ButtonDefaults.outlinedButtonColors(
@@ -249,7 +249,7 @@ fun Donate(navController: NavController){
                         photoUri?.let { cameraLauncher.launch(it) }
                     },
                     modifier = Modifier
-                        .border(1.dp, colorResource(R.color.BlueButton), shape = RoundedCornerShape(15.dp))
+                        .border(1.dp, colorResource(R.color.calmingGreenLight), shape = RoundedCornerShape(15.dp))
                         .width(280.dp)
                         .clip(RoundedCornerShape(15.dp)),
                     colors = ButtonDefaults.outlinedButtonColors(
@@ -349,12 +349,12 @@ fun textField(label: String, data: MutableState<String>, focusManager: FocusMana
             onDone = {  }),
         maxLines = 10,
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = colorResource(R.color.NavBar),
+            focusedBorderColor = colorResource(R.color.calmingGreenLight),
             unfocusedLabelColor = Color.Gray,
             cursorColor = Color.Black,
             textColor = Color.LightGray,
-            focusedLabelColor = colorResource(R.color.NavBar),
-            unfocusedBorderColor = colorResource(R.color.BlueButton)
+            focusedLabelColor = colorResource(R.color.calmingGreenLight),
+            unfocusedBorderColor = colorResource(R.color.calmingGreenLight)
         )
     )
 }

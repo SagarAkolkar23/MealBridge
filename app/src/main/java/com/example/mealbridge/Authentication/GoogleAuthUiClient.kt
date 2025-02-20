@@ -7,6 +7,7 @@ import android.content.IntentSender
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
 import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.Firebase
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
@@ -58,6 +59,7 @@ class GoogleAuthUiClient(
                     Data(
                         id = uid,
                         name = displayName,
+                        email = email,
                         profile = photoUrl?.toString()
                     )
                 },
@@ -87,8 +89,14 @@ class GoogleAuthUiClient(
         Data(
             id = uid,
             name = displayName,
+            email = email,
             profile = photoUrl?.toString()
         )
+    }
+
+    fun getSignedInEmail(): String? {
+        val account = getSignedInUser()
+        return account?.email
     }
 
 }

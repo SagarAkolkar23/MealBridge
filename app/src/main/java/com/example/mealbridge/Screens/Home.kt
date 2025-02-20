@@ -26,22 +26,36 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mealbridge.Authentication.GoogleAuthUiClient
 import com.example.mealbridge.R
+import com.google.android.gms.auth.api.identity.Identity
 
 @Composable
 fun Home(){
+
+    val context = LocalContext.current
+    val googleAuthUiClient by lazy {
+        GoogleAuthUiClient(
+            context = context,
+            oneTapClient = Identity.getSignInClient(context)
+        )
+    }
+    val user = googleAuthUiClient.getSignedInUser()
     Column(modifier = Modifier
         .fillMaxSize()) {
-        Text("Hello User")
-        card()
+        Text("Hello ${user?.name}")
 
     }
 

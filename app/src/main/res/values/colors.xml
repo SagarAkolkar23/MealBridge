@@ -10,6 +10,8 @@
     <color name="lightGray">#F5F5F5</color>
     <color name="coralRed">#FF6F61</color>
     <color name="calmingGreen">#4CAF50</color>
+    <color name="calmingGreenLight">#6EBB71</color>
+    <color name="LighterGreen">#A3E6A5</color>
     <color name="NavBar">#2196F3</color>
     <color name="BlueButton">#75B6EB</color>
     <color name="PrimaryButton">#4CAF50</color>

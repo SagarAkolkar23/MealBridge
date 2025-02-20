@@ -37,7 +37,7 @@ import com.example.mealbridge.R
 fun BottomNavBar(navController: NavController){
 
             BottomNavigation(
-                backgroundColor = colorResource(R.color.NavBar),
+                backgroundColor = colorResource(R.color.calmingGreen),
                 contentColor = colorResource(R.color.lightGray)
             ) {
                 val items = listOf(

@@ -1,5 +1,6 @@
 package com.example.mealbridge
 
+import NavGraph
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -45,7 +46,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             MealBridgeTheme {
-                navigations()
+                NavGraph(navController)
             }
         }
     }
