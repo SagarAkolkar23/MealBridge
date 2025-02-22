@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.icu.text.SimpleDateFormat
 import android.location.Location
 import android.net.Uri
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -73,7 +74,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mealbridge.R
 import com.example.mealbridge.UploadFoodDetails
+import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import java.io.File
@@ -99,6 +102,15 @@ fun Donate(navController: NavController){
     var selectedCountry by remember { mutableStateOf("Food Type*") }
     val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).build()
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+    var photoFile by remember { mutableStateOf<File?>(null) }
+    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as android.location.LocationManager
+    val isGpsEnabled = locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)
+
+    if (!isGpsEnabled) {
+        showToast(context, "Please enable GPS and try again.")
+    }
+
+
 
 
 
@@ -243,10 +255,10 @@ fun Donate(navController: NavController){
             item {
                 OutlinedButton(
                     onClick = {
-                        val photoFile = createImageFile(context) { uri ->
-                            photoUri = uri
-                        }
-                        photoUri?.let { cameraLauncher.launch(it) }
+                        val (file, uri) = createImageFile(context)
+                        photoFile = file
+                        photoUri = uri
+                        cameraLauncher.launch(uri)
                     },
                     modifier = Modifier
                         .border(1.dp, colorResource(R.color.calmingGreenLight), shape = RoundedCornerShape(15.dp))
@@ -263,14 +275,7 @@ fun Donate(navController: NavController){
                     )
                 }
             }
-            item {
-                if (photoUri != null) {
-                    Text(
-                        text = "Photo saved at: $photoUri",
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-            }
+
             item {
                 Button(
                     onClick = {
@@ -346,7 +351,7 @@ fun textField(label: String, data: MutableState<String>, focusManager: FocusMana
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = imeAction),
         keyboardActions = KeyboardActions(
             onNext = { focusManager.moveFocus(FocusDirection.Down) },
-            onDone = {  }),
+            onDone = { focusManager.clearFocus() }),
         maxLines = 10,
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = colorResource(R.color.calmingGreenLight),
@@ -370,25 +375,19 @@ fun showTimePicker(context: Context, onTimeSelected: (Int, Int) -> Unit) {
 
     timePickerDialog.show()
 }
-
-
-fun createImageFile(context: Context, onUriCreated: (Uri) -> Unit): File {
-
+fun createImageFile(context: Context): Pair<File, Uri> {
     val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-    val storageDir = context.externalCacheDir
-    return File.createTempFile(
-        "JPEG_${timeStamp}_", /* prefix */
-        ".jpg", /* suffix */
-        storageDir /* directory */
-    ).apply {
-        // Save the file path in the photoUri state
-        val photoUri = FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.fileprovider",
-            this
-        )
-        onUriCreated(photoUri)
-    }
+    val storageDir = File(context.getExternalFilesDir(null), "MealBridge_Images").apply { mkdirs() }
+
+    val file = File(storageDir, "JPEG_${timeStamp}.jpg") // Creates a unique filename
+
+    val uri = FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.fileprovider", // Must match the one in AndroidManifest.xml
+        file
+    )
+
+    return Pair(file, uri)
 }
 
 fun validateFields(

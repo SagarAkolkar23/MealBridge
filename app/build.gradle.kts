@@ -94,6 +94,11 @@ dependencies {
     implementation(libs.coil3.coil.compose)
     implementation(libs.coil.compose.v210)
 
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+    implementation (libs.okhttp)
+    implementation (libs.adapter.rxjava2)
+
 
 
 
